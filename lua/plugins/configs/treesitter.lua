@@ -1,4 +1,4 @@
-require("nvim-treesitter.configs").setup {
+require("nvim-treesitter.configs").setup({
   ensure_installed = {
     -- defaults
     "vim",
@@ -30,14 +30,18 @@ require("nvim-treesitter.configs").setup {
     "regex",
     "c_sharp",
     "sql",
+    "markdown",
+    "markdown_inline",
   },
 
   highlight = {
     enable = true,
     use_languagetree = true,
+    additional_vim_regex_highlighting = false,
   },
   folding = {
     enable = true,
   },
   indent = { enable = true },
-}
+})
+

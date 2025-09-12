@@ -1,0 +1,8 @@
+require("config.options")
+require("config.autocmds")
+require("config.keymaps")
+require("config.statusline")
+require("lsp")
+require("commands")
+require("term")
+require("gtags").setup()

@@ -1,5 +1,5 @@
-local fzf = require "fzf-lua"
-fzf.setup {
+local fzf = require("fzf-lua")
+fzf.setup({
   winopts = {
     preview = {
       layout = "vertical",
@@ -8,6 +8,7 @@ fzf.setup {
   files = {
     respect_gitignore = true,
     hidden = false,
+    follow_symlinks = true,
   },
   keymap = {
     builtin = {
@@ -31,5 +32,6 @@ fzf.setup {
       ["ctrl-h"] = fzf.actions.toggle_hidden,
     },
   },
-}
+})
 return fzf
+
