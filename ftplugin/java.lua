@@ -121,25 +121,13 @@ local config = {
     local utils = require("lsp.utils")
     utils.on_attach(client, bufnr)
 
-    -- vim.api.nvim_create_autocmd("BufWritePre", {
-    --   buffer = bufnr,
-    --   callback = function()
-    --     vim.lsp.buf.format({ async = false })
-    --   end,
-    -- })
-
     vim.keymap.set("n", "<leader>jo", jdtls.organize_imports, { buffer = bufnr, desc = "Organize imports (Java)" })
     vim.keymap.set("n", "<leader>jev", jdtls.extract_variable, { buffer = bufnr, desc = "Extract variable (Java)" })
     vim.keymap.set("n", "<leader>jec", jdtls.extract_constant, { buffer = bufnr, desc = "Extract constant (Java)" })
     vim.keymap.set("v", "<leader>jem", function()
       jdtls.extract_method(true)
     end, { buffer = bufnr, desc = "Extract method (Java)" })
-    vim.keymap.set(
-      "n",
-      "<leader>jt",
-      jdtls.test_nearest_method,
-      { buffer = bufnr, desc = "Test nearest method (Java)" }
-    )
+    vim.keymap.set("n", "<leader>jt", jdtls.test_nearest_method, { buffer = bufnr, desc = "Test nearest method (Java)" })
     vim.keymap.set("n", "<leader>jT", jdtls.test_class, { buffer = bufnr, desc = "Test class (Java)" })
   end,
 }

@@ -21,14 +21,4 @@ vim.lsp.start({
     clangdFileStatus = true,
   },
   capabilities = utils.capabilities,
-  on_attach = function(client, bufnr)
-    utils.on_attach(client, bufnr)
-
-    -- vim.api.nvim_create_autocmd("BufWritePre", {
-    --   buffer = bufnr,
-    --   callback = function()
-    --     vim.lsp.buf.format({ async = false })
-    --   end,
-    -- })
-  end,
 })

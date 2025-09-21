@@ -26,16 +26,4 @@ vim.lsp.start({
     },
   },
   capabilities = utils.capabilities,
-  on_attach = function(client, bufnr)
-    utils.on_attach(client, bufnr)
-    --format
-    vim.keymap.set({ "n" }, "<leader>fm", function()
-      vim.lsp.buf.format({
-        async = true,
-        filter = function(c)
-          return c.name == "lua_ls"
-        end,
-      })
-    end)
-  end,
 })
