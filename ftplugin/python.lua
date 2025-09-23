@@ -31,9 +31,9 @@ if root_dir then
     },
     on_attach = function(client, bufnr)
       utils.on_attach(client, bufnr)
-
       vim.keymap.set({ "n" }, "<leader>fm", function()
         vim.cmd "write"
+        vim.fn.system("isort " .. vim.fn.shellescape(vim.fn.expand "%"))
         vim.fn.system("black " .. vim.fn.shellescape(vim.fn.expand "%"))
         vim.cmd "edit!"
       end, { buffer = bufnr })
