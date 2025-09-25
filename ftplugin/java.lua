@@ -57,6 +57,11 @@ local config = {
           {
             name = "JavaSE-21",
             path = "/usr/lib/jvm/java-21-openjdk/",
+            default = true,
+          },
+          {
+            name = "JavaSE-25",
+            path = "/usr/lib/jvm/java-25-openjdk/",
           },
         },
       },
