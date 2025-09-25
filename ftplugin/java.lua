@@ -1,7 +1,7 @@
 local jdtls = require("jdtls")
 local home = os.getenv("HOME")
 
-local java_path = "/usr/lib/jvm/java-21-openjdk/bin/java"
+local java_path = "/usr/lib/jvm/java-21-temurin/bin/java"
 local jdtls_path = "/usr/share/java/jdtls"
 local java_debug_jar = "/usr/share/java-debug/com.microsoft.java.debug.plugin.jar"
 local lombok_jar = home .. "/.local/share/lombok/lombok.jar"
@@ -56,12 +56,12 @@ local config = {
         runtimes = {
           {
             name = "JavaSE-21",
-            path = "/usr/lib/jvm/java-21-openjdk/",
+            path = "/usr/lib/jvm/java-21-temurin/",
             default = true,
           },
           {
             name = "JavaSE-25",
-            path = "/usr/lib/jvm/java-25-openjdk/",
+            path = "/usr/lib/jvm/java-25-temurin/",
           },
         },
       },

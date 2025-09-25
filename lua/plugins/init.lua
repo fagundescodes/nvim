@@ -9,6 +9,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     dependencies = { "OXY2DEV/markview.nvim" },
+    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
     build = ":TSUpdate",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
