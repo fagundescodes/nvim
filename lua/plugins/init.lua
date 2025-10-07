@@ -115,6 +115,14 @@ return {
     dependencies = { "mfussenegger/nvim-dap" },
   },
 
+  {
+    "theHamsta/nvim-dap-virtual-text",
+    lazy = false,
+    config = function(_, opts)
+      require("nvim-dap-virtual-text").setup()
+    end,
+  },
+
   -- Mason for LSP/tool management
   {
     "williamboman/mason.nvim",
