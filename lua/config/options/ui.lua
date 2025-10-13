@@ -42,7 +42,6 @@ vim.o.cmdheight = 1
 -- background setting
 vim.o.background = "dark"
 
--- colorscheme
 vim.cmd("colorscheme rose-pine")
 
 -- vim.api.nvim_create_autocmd("ColorScheme", {

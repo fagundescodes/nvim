@@ -217,8 +217,28 @@ local function set_colors()
   -- Fold highlights
   vim.api.nvim_set_hl(0, "Folded", { fg = colors.muted, bg = colors.surface })
   vim.api.nvim_set_hl(0, "FoldColumn", { fg = colors.muted, bg = colors.base })
+
+  -- Command line and history
+  vim.api.nvim_set_hl(0, "MsgArea", { fg = colors.text, bg = colors.base })
+  vim.api.nvim_set_hl(0, "MsgSeparator", { fg = colors.subtle, bg = colors.base })
+  vim.api.nvim_set_hl(0, "MoreMsg", { fg = colors.foam })
+  vim.api.nvim_set_hl(0, "Question", { fg = colors.gold })
+  vim.api.nvim_set_hl(0, "WildMenu", { fg = colors.base, bg = colors.gold })
+  vim.api.nvim_set_hl(0, "CmdLine", { fg = colors.text, bg = colors.base })
+  vim.api.nvim_set_hl(0, "CmdLineCursor", { fg = colors.base, bg = colors.text })
+
+  -- Floating windows
+  vim.api.nvim_set_hl(0, "FloatBorder", { fg = colors.subtle })
+  vim.api.nvim_set_hl(0, "FloatTitle", { fg = colors.text })
+  vim.api.nvim_set_hl(0, "WinSeparator", { fg = colors.muted })
+
+  -- Standard UI elements
+  vim.api.nvim_set_hl(0, "Title", { fg = colors.text })
+  vim.api.nvim_set_hl(0, "Directory", { fg = colors.foam })
+  vim.api.nvim_set_hl(0, "Underlined", { fg = colors.foam, underline = true })
+  vim.api.nvim_set_hl(0, "Ignore", { fg = colors.muted })
 end
 
 set_essential_colors()
 
-vim.schedule(set_colors)
+set_colors()
