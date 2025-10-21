@@ -74,22 +74,15 @@ if root_dir then
       vim.keymap.set("n", "<leader>fm", function()
         local file = vim.fn.expand("%")
         local escaped_file = vim.fn.shellescape(file)
+        local cursor_pos  = vim.api.nvim_win_get_cursor(0)
 
         vim.cmd("write")
 
-        local isort_result = vim.fn.system("isort --check-only " .. escaped_file)
-        if vim.v.shell_error ~= 0 then
-          vim.fn.system("isort " .. escaped_file)
-          print("Imports sorted")
-        end
+        vim.fn.system("isort " .. escaped_file)
+        vim.fn.system("black " .. escaped_file)
 
-        local black_result = vim.fn.system("black --check " .. escaped_file)
-        if vim.v.shell_error ~= 0 then
-          vim.fn.system("black " .. escaped_file)
-          print("Code formatted")
-        end
-
-        vim.cmd("edit!")
+        vim.cmd("checktime")
+        vim.api.nvim_win_set_cursor(0, cursor_pos)
       end, { buffer = bufnr, desc = "Format Python file" })
     end,
   })

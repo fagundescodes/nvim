@@ -55,8 +55,6 @@ map("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move line up" })
 -- General mappings
 map("n", "<C-d>", "<c-d>zz", { desc = "Scroll down and center" })
 map("n", "<C-u>", "<C-u>zz", { desc = "Scroll up and center" })
--- clear highlights
-map("n", "<Esc>", "<cmd>noh<CR>", { desc = "clear search highlights" })
 -- lines moving normal mode
 map("n", "j", "v:count || mode(1)[0:1] == 'no' ? 'j' : 'gj'", { expr = true, noremap = true, silent = true })
 map("n", "k", "v:count || mode(1)[0:1] == 'no' ? 'k' : 'gk'", { expr = true, noremap = true, silent = true })
@@ -95,7 +93,6 @@ map("n", "<leader>rn", "<cmd>set rnu!<CR>", { desc = "toggle relative numbers" }
 
 -- nvim-tree
 map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "toggle file explorer" })
-map("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "focus file explorer" })
 
 map("n", "<leader>wK", "<cmd>WhichKey <CR>", { desc = "whichkey all keymaps" })
 map("n", "<leader>wk", function()
