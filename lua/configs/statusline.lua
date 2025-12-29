@@ -1,5 +1,3 @@
-local git = require("utils.git")
-
 local M = {}
 
 local function get_relative_path()
@@ -11,12 +9,14 @@ local function get_relative_path()
 end
 
 local function get_git_info()
-  local branch = git.branch.get()
-  if branch:len() == 0 then
+  local status_dict = vim.b.gitsigns_status_dict
+  if not status_dict or not status_dict.head then
     return ""
   end
 
+  local branch = status_dict.head
   local changes = ""
+
   if vim.b.gitsigns_status then
     local status = vim.b.gitsigns_status
     if status and status ~= "" then
@@ -80,7 +80,6 @@ function M.winbar()
 
   table.insert(parts, "[" .. vim.fn.bufnr() .. "]: ")
 
-  -- Caminho completo do arquivo
   local filepath = vim.fn.expand("%:p")
   if filepath == "" then
     table.insert(parts, "No Name")
@@ -88,7 +87,6 @@ function M.winbar()
     table.insert(parts, vim.fn.expand("%:f"))
   end
 
-  -- File indicators
   if vim.bo.modified then
     table.insert(parts, " [+]")
   end
@@ -100,8 +98,8 @@ function M.winbar()
 end
 
 function M.setup()
-  vim.opt.statusline = "%!v:lua.require('config.statusline').statusline()"
-  vim.opt.winbar = "%!v:lua.require('config.statusline').winbar()"
+  vim.opt.statusline = "%!v:lua.require('configs.statusline').statusline()"
+  vim.opt.winbar = "%!v:lua.require('configs.statusline').winbar()"
 end
 
 M.setup()

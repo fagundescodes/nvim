@@ -96,3 +96,25 @@ for _, language in ipairs({ "typescript", "javascript" }) do
     },
   }
 end
+
+dap.adapters.coreclr = {
+  type = "executable",
+  command = "netcoredbg",
+  args = { "--interpreter=vscode" },
+}
+
+dap.configurations.cs = {
+  {
+    type = "coreclr",
+    name = "launch - netcoredbg",
+    request = "launch",
+    program = function()
+      vim.fn.system("dotnet build")
+      local csproj = vim.fn.glob("*.csproj")
+      local project_name = csproj ~= "" and vim.fn.fnamemodify(csproj, ":t:r") or vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+      local dll = vim.fn.glob("bin/Debug/net*/" .. project_name .. ".dll")
+      return dll ~= "" and dll or vim.fn.getcwd() .. "/bin/Debug/net9.0/" .. project_name .. ".dll"
+    end,
+    cwd = "${workspaceFolder}",
+  },
+}

@@ -1,4 +1,4 @@
-local cmp = require("cmp")
+local cmp = require "cmp"
 
 local cmp_kinds = {
   Namespace = "󰌗",
@@ -54,18 +54,12 @@ local formatting_style = {
   end,
 }
 
-cmp.setup({
-  completion = {
-    completeopt = "menu,menuone,noinsert",
-    autocomplete = false,
-  },
-
+cmp.setup {
   snippet = {
     expand = function(args)
       require("luasnip").lsp_expand(args.body)
     end,
   },
-
   mapping = {
     ["<C-p>"] = cmp.mapping.select_prev_item(),
     ["<C-n>"] = cmp.mapping.select_next_item(),
@@ -73,10 +67,10 @@ cmp.setup({
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-e>"] = cmp.mapping.close(),
-    ["<CR>"] = cmp.mapping.confirm({
+    ["<CR>"] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Insert,
       select = true,
-    }),
+    },
     ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
@@ -96,66 +90,41 @@ cmp.setup({
       end
     end, { "i", "s" }),
   },
-
   sources = {
     { name = "nvim_lsp", priority = 1000 },
-    { name = "luasnip", priority = 750 },
-    { name = "buffer", priority = 500 },
+    { name = "luasnip",  priority = 750 },
+    { name = "buffer",   priority = 500 },
     { name = "nvim_lua", priority = 400 },
-    { name = "path", priority = 250 },
-    { name = "spell", priority = 100 },
+    { name = "path",     priority = 250 },
+    { name = "spell",    priority = 100 },
   },
-
   formatting = formatting_style,
-
   window = {
     completion = {
       side_padding = 0,
       winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None",
       scrollbar = false,
-      border = border("CmpBorder"),
+      border = border "CmpBorder",
     },
     documentation = {
-      border = border("CmpDocBorder"),
+      border = border "CmpDocBorder",
       winhighlight = "Normal:CmpDoc",
     },
   },
-
-  experimental = {
-    ghost_text = true,
+  completion = {
+    completeopt = "menu,menuone,noselect",
   },
-})
+}
 
-cmp.event:on("menu_opened", function()
-  vim.schedule(function()
-    if cmp.visible() then
-      cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-    end
-  end)
-end)
-
-vim.cmd([[
+vim.cmd [[
   highlight! default link CmpSel PmenuSel
   highlight! default link CmpPmenu Pmenu
   highlight! default link CmpPmenuSel PmenuSel
   highlight! default link CmpBorder Pmenu
   highlight! default link CmpDoc Pmenu
   highlight! default link CmpDocBorder Pmenu
-]])
+]]
 
 vim.o.pumheight = 10
 
-vim.api.nvim_create_autocmd("LspAttach", {
-  desc = "Habilitar inlay hints",
-  callback = function(event)
-    local id = vim.tbl_get(event, "data", "client_id")
-    local client = id and vim.lsp.get_client_by_id(id)
-    if client == nil or not client.supports_method("textDocument/inlayHint") then
-      return
-    end
-    vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
-  end,
-})
-
 return cmp
-

@@ -15,12 +15,9 @@ M.setup_keymaps = function(bufnr)
   map("n", "<leader>wl", function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, opts("List workspace folders"))
-  map(
-    { "n" },
-    "<leader>ce",
-    "<cmd>lua vim.diagnostic.open_float { border = 'rounded' }<CR>",
-    { desc = "Floating diagnostic" }
-  )
+  map({ "n" }, "<leader>ce", function()
+    require("scripts.diagnostics").hover()
+  end, { desc = "Floating diagnostic" })
   map("n", "<leader>D", vim.lsp.buf.type_definition, opts("Go to type definition"))
   map("n", "<leader>ra", vim.lsp.buf.rename, opts("Rename"))
   map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts("Code action"))
@@ -32,9 +29,9 @@ M.setup_diagnostics = function()
 
   local signs = {
     { name = "DiagnosticSignError", text = icons.Error },
-    { name = "DiagnosticSignWarn", text = icons.Warn },
-    { name = "DiagnosticSignInfo", text = icons.Info },
-    { name = "DiagnosticSignHint", text = icons.Hint },
+    { name = "DiagnosticSignWarn",  text = icons.Warn },
+    { name = "DiagnosticSignInfo",  text = icons.Info },
+    { name = "DiagnosticSignHint",  text = icons.Hint },
   }
 
   for _, sign in ipairs(signs) do
@@ -47,12 +44,7 @@ M.setup_diagnostics = function()
 
   vim.diagnostic.config({
     severity_sort = true,
-    virtual_text = {
-      severity = {
-        min = vim.diagnostic.severity.WARN,
-      },
-      prefix = "●",
-    },
+    virtual_text = false,
     virtual_lines = { current_line = true },
     underline = true,
     signs = {
@@ -72,34 +64,6 @@ M.setup_diagnostics = function()
       prefix = "",
     },
   })
-
-  -- Uncomment below to enable diagnostic float in top-right corner on cursor move
-  --[[
-  local timer = vim.loop and vim.loop.new_timer() or vim.uv.new_timer()
-  local delay = 50
-  vim.api.nvim_create_autocmd({ "CursorMoved", "DiagnosticChanged" }, {
-    callback = function()
-      timer:start(delay, 0, function()
-        timer:stop()
-        vim.schedule(function()
-          local _, win = vim.diagnostic.open_float(nil, { focusable = false, source = "if_many" })
-          if not win then
-            return
-          end
-
-          local cfg = vim.api.nvim_win_get_config(win)
-          cfg.anchor = "NE"
-          cfg.row = 0
-          cfg.col = vim.o.columns - 1
-          cfg.width = math.min(cfg.width or 999, math.floor(vim.o.columns * 0.6))
-          cfg.height = math.min(cfg.height or 999, math.floor(vim.o.lines * 0.4))
-
-          vim.api.nvim_win_set_config(win, cfg)
-        end)
-      end)
-    end,
-  })
-  --]]
 end
 
 M.capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -130,5 +94,21 @@ M.on_attach = function(client, bufnr)
     vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
   end
 end
+
+-- Setup diagnostics globally
+M.setup_diagnostics()
+
+-- Setup fancy diagnostics
+require("scripts.diagnostics").setup()
+
+-- Global LspAttach autocmd
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    local bufnr = args.buf
+    M.on_attach(client, bufnr)
+  end,
+})
 
 return M

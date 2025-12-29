@@ -1,5 +1,3 @@
--- autocmds taken from https://github.com/LazyVim/LazyVim
-
 local function augroup(name)
   return vim.api.nvim_create_augroup("lazyvim_" .. name, { clear = true })
 end
@@ -12,7 +10,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- resize splits if window got resized
+-- Resize splits if window got resized
 vim.api.nvim_create_autocmd({ "VimResized" }, {
   group = augroup("resize_splits"),
   callback = function()
@@ -22,7 +20,7 @@ vim.api.nvim_create_autocmd({ "VimResized" }, {
   end,
 })
 
--- go to last loc when opening a buffer
+-- Go to last loc when opening a buffer
 vim.api.nvim_create_autocmd("BufReadPost", {
   group = augroup("last_loc"),
   callback = function(event)
@@ -40,7 +38,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
--- close some filetypes with <q>
+-- Close some filetypes with <q>
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup("close_with_q"),
   pattern = {
@@ -65,7 +63,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- wrap and check for spell in text filetypes
+-- Wrap and check for spell in text filetypes
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup("wrap_spell"),
   pattern = { "gitcommit", "markdown" },
@@ -84,5 +82,41 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
     end
     local file = vim.uv.fs_realpath(event.match) or event.match
     vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
+  end,
+})
+
+-- Quickfix list keybindings
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("quickfix_keymaps"),
+  pattern = "qf",
+  callback = function(event)
+    local opts = { buffer = event.buf, noremap = true }
+
+    -- Close qf/loclist upon selecting entry
+    vim.keymap.set("n", "<cr>", function()
+      local win = vim.api.nvim_get_current_win()
+      local keys = vim.api.nvim_replace_termcodes("<cr>", true, false, true)
+      vim.api.nvim_feedkeys(keys, "nt", false)
+      vim.schedule(function()
+        if vim.api.nvim_win_is_valid(win) then
+          vim.api.nvim_win_close(win, false)
+        end
+      end)
+    end, vim.tbl_extend("force", opts, { desc = "Select entry and close list" }))
+
+    -- Select without closing
+    vim.keymap.set("n", "o", "<cr>", vim.tbl_extend("force", opts, { desc = "Select without closing list" }))
+
+    -- Preview entry
+    vim.keymap.set("n", "p", function()
+      local win = vim.api.nvim_get_current_win()
+      local keys = vim.api.nvim_replace_termcodes("<cr>", true, false, true)
+      vim.api.nvim_feedkeys(keys, "nt", false)
+      vim.schedule(function()
+        if vim.api.nvim_win_is_valid(win) then
+          vim.api.nvim_set_current_win(win)
+        end
+      end)
+    end, vim.tbl_extend("force", opts, { desc = "Preview" }))
   end,
 })

@@ -1,7 +1,12 @@
--- Base configuration from unplugged
-require("config")
+require("options")
+require("autocmds")
+require("mappings")
+require("commands")
+require("term")
+require("lsp.utils")
+require("configs.statusline")
 
--- Bootstrap lazy.nvim for plugins
+-- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -16,7 +21,4 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- Setup plugins
-require("lazy").setup("plugins", {
-  change_detection = { notify = false },
-  ui = { border = "rounded" },
-})
+require("lazy").setup("plugins", require("configs.lazy"))

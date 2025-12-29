@@ -1,5 +1,3 @@
-local git = require("utils.git")
-git.setup()
 local map = vim.keymap.set
 
 -- vim.g.mapleader = ";"
@@ -34,10 +32,9 @@ map("c", "Q", "q", { noremap = true, silent = true })
 map("i", "jk", "<ESC>", { noremap = true, silent = true })
 map("i", "kj", "<ESC>", { noremap = true, silent = true })
 
--- Duplicate a line and comment out the first line
 map("n", "yc", "yy:normal gcc<CR>p", { desc = "Duplicate line and comment original" })
 
--- Insert mode mappings
+-- Insert mode
 map("i", "<C-b>", "<ESC>^i", { desc = "move to beginning of line" })
 map("i", "<C-e>", "<End>", { desc = "move to end of line" })
 map("i", "<C-h>", "<Left>", { desc = "move left" })
@@ -81,6 +78,12 @@ else
   map("n", "<C-k>", "<C-w>k", { desc = "switch to top window" })
 end
 
+-- window resizing
+map("n", "<M-H>", "2<C-w><", { desc = "decrease window width" })
+map("n", "<M-L>", "2<C-w>>", { desc = "increase window width" })
+map("n", "<M-K>", "2<C-w>+", { desc = "increase window height" })
+map("n", "<M-J>", "2<C-w>-", { desc = "decrease window height" })
+
 map("n", "<CR>", "<cmd>w<CR>", { desc = "save file" })
 map("n", "<C-c>", "<cmd>%y+<CR>", { desc = "general copy whole file" })
 map("n", "n", "nzzzv", { desc = "Next search result centered" })
@@ -100,15 +103,13 @@ map("n", "<leader>wk", function()
 end, { desc = "whichkey query lookup" })
 
 -- DAP mappings
-local dap_map = vim.keymap.set
-
-dap_map("n", "<F10>", "<cmd>lua require('dap').toggle_breakpoint()<CR>", { desc = "Toggle breakpoint" })
-dap_map("n", "<F5>", "<cmd>lua require('dap').continue()<CR>", { desc = "Continue" })
-dap_map("n", "<F9>", "<cmd>lua require('dap').restart()<CR>", { desc = "Restart" })
-dap_map("n", "<F7>", "<cmd>lua require('dap').step_out()<CR>", { desc = "Step out" })
-dap_map("n", "<F6>", "<cmd>lua require('dap').step_into()<CR>", { desc = "Step into" })
-dap_map("n", "<F8>", "<cmd>lua require('dap').step_over()<CR>", { desc = "Step over" })
-dap_map("n", "<leader>dpr", function()
+map("n", "<F10>", "<cmd>lua require('dap').toggle_breakpoint()<CR>", { desc = "Toggle breakpoint" })
+map("n", "<F5>", "<cmd>lua require('dap').continue()<CR>", { desc = "Continue" })
+map("n", "<F9>", "<cmd>lua require('dap').restart()<CR>", { desc = "Restart" })
+map("n", "<F7>", "<cmd>lua require('dap').step_out()<CR>", { desc = "Step out" })
+map("n", "<F6>", "<cmd>lua require('dap').step_into()<CR>", { desc = "Step into" })
+map("n", "<F8>", "<cmd>lua require('dap').step_over()<CR>", { desc = "Step over" })
+map("n", "<leader>dpr", function()
   local args = vim.fn.input("Arguments: ")
   vim.cmd("RustLsp debuggables " .. args)
 end, { desc = "Select and run Rust debuggable" })

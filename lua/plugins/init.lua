@@ -1,23 +1,33 @@
 return {
-  -- Core dependencies
+
   {
     lazy = true,
     "nvim-lua/plenary.nvim",
+  },
+
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+    config = function()
+      vim.cmd("colorscheme tokyonight-night")
+    end,
   },
 
   -- Syntax highlighting
   {
     "nvim-treesitter/nvim-treesitter",
     dependencies = { "OXY2DEV/markview.nvim" },
-    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
+    branch = "main",
+    lazy = false,
     build = ":TSUpdate",
-    event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("plugins.configs.treesitter")
     end,
   },
 
-  -- Completion
+  -- Comp
   {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
@@ -52,22 +62,41 @@ return {
     end,
   },
 
-  -- LazyGit integration
+  -- LazyGit
   {
     "kdheepak/lazygit.nvim",
     cmd = { "LazyGit", "LazyGitConfig", "LazyGitCurrentFile", "LazyGitFilter", "LazyGitFilterCurrentFile" },
+  },
+
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
+  },
+
+  {
+    "NeogitOrg/neogit",
+    cmd = "Neogit",
+    dependencies = {
+      "sindrets/diffview.nvim",
+      "nvim-lua/plenary.nvim",
+    },
+    opts = {
+      signs = { section = { "", "" }, item = { "", "" } },
+      disable_commit_confirmation = true,
+      integrations = { diffview = true },
+    },
   },
 
   -- Git signs
   {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    opts = {
-      signcolumn = false,
-    },
+    opts = function()
+      return require("plugins.configs.gitsigns")
+    end,
   },
 
-  -- DAP (Debug Adapter Protocol)
+  -- DAP
   {
     "mfussenegger/nvim-dap",
     dependencies = {
@@ -79,7 +108,6 @@ return {
     end,
   },
 
-  -- Language specific DAP
   {
     "mfussenegger/nvim-dap-python",
     ft = "python",
@@ -117,10 +145,8 @@ return {
 
   {
     "theHamsta/nvim-dap-virtual-text",
-    lazy = false,
-    config = function(_, opts)
-      require("nvim-dap-virtual-text").setup()
-    end,
+    dependencies = { "mfussenegger/nvim-dap" },
+    opts = {},
   },
 
   -- Mason for LSP/tool management
@@ -131,7 +157,6 @@ return {
     opts = {},
   },
 
-  -- Which-key for keybinding hints
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
@@ -141,7 +166,6 @@ return {
     end,
   },
 
-  -- File tree
   {
     "nvim-tree/nvim-tree.lua",
     cmd = { "NvimTreeToggle", "NvimTreeFocus" },
@@ -156,13 +180,12 @@ return {
     end,
   },
 
-  -- Icons for UI
   {
     "nvim-tree/nvim-web-devicons",
     lazy = true,
   },
 
-  -- Tmux integration
+  -- Tmux
   {
     "christoomey/vim-tmux-navigator",
     event = "VeryLazy",
