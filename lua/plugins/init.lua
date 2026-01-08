@@ -69,15 +69,16 @@ return {
   },
 
   {
-    "sindrets/diffview.nvim",
-    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
+    "esmuellert/codediff.nvim",
+    dependencies = { "MunifTanjim/nui.nvim" },
+    cmd = { "CodeDiff", "CodeDiffOpen", "CodeDiffClose", "CodeDiffToggleFiles" },
   },
 
   {
     "NeogitOrg/neogit",
     cmd = "Neogit",
     dependencies = {
-      "sindrets/diffview.nvim",
+      "esmuellert/codediff.nvim",
       "nvim-lua/plenary.nvim",
     },
     opts = {
