@@ -8,11 +8,14 @@ local root_dir = paths[1] and vim.fs.dirname(paths[1]) or vim.fn.getcwd()
 
 if root_dir then
   vim.lsp.start({
-    name = "omnisharp",
-    cmd = { "omnisharp", "--languageserver", "--hostPID", tostring(vim.fn.getpid()) },
+    name = "csharp_ls",
+    cmd = { "csharp-ls" },
     filetypes = { "cs" },
     root_dir = root_dir,
     capabilities = utils.capabilities,
+    init_options = {
+      AutomaticWorkspaceInit = true,
+    },
     on_attach = function(client, bufnr)
       utils.on_attach(client, bufnr)
 
