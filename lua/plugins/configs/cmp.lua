@@ -1,9 +1,8 @@
 local cmp = require "cmp"
 
-local cmp_kinds = {
-  Namespace = "󰌗",
-  Text = "",
-  Method = "",
+local kind_icons = {
+  Text = "󰉿",
+  Method = "󰆧",
   Function = "󰊕",
   Constructor = "",
   Field = "󰜢",
@@ -11,16 +10,15 @@ local cmp_kinds = {
   Class = "󰠱",
   Interface = "",
   Module = "",
-  Property = "",
+  Property = "󰜢",
   Unit = "󰑭",
   Value = "󰎠",
   Enum = "",
   Keyword = "󰌋",
   Snippet = "",
-  -- Snippet = "󰘍",
   Color = "󰏘",
   File = "󰈚",
-  Reference = "󰌹",
+  Reference = "󰈇",
   Folder = "󰉋",
   EnumMember = "",
   Constant = "󰏿",
@@ -30,51 +28,53 @@ local cmp_kinds = {
   TypeParameter = "󰊄",
 }
 
-local function border(hl_name)
-  return {
-    { "╭", hl_name },
-    { "─", hl_name },
-    { "╮", hl_name },
-    { "│", hl_name },
-    { "╯", hl_name },
-    { "─", hl_name },
-    { "╰", hl_name },
-    { "│", hl_name },
-  }
-end
+cmp.setup({
+  completion = { completeopt = "menu,menuone" },
 
-local formatting_style = {
-  fields = { "kind", "abbr", "menu" },
-  format = function(entry, item)
-    local icon = cmp_kinds[item.kind] or ""
-    icon = " " .. icon .. " "
-    item.menu = "   (" .. item.kind .. ")"
-    item.kind = icon
-    return item
-  end,
-}
+  view = {
+    docs = {
+      auto_open = false,
+    },
+  },
 
-cmp.setup {
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered({
+      max_width = 60,
+      max_height = 14,
+      col_offset = 1,
+    }),
+  },
+
   snippet = {
     expand = function(args)
       require("luasnip").lsp_expand(args.body)
     end,
   },
-  mapping = {
+
+  mapping = cmp.mapping.preset.insert({
     ["<C-p>"] = cmp.mapping.select_prev_item(),
     ["<C-n>"] = cmp.mapping.select_next_item(),
-    ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<C-u>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-d>"] = cmp.mapping.scroll_docs(4),
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-e>"] = cmp.mapping.close(),
-    ["<CR>"] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Insert,
-      select = true,
-    },
+    ["<C-o>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        if cmp.visible_docs() then
+          cmp.close_docs()
+        else
+          cmp.open_docs()
+        end
+      else
+        fallback()
+      end
+    end, { "i", "c" }),
+    ["<CR>"] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true }),
     ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
-      elseif require("luasnip").expand_or_jumpable() then
+      elseif require("luasnip").expand_or_locally_jumpable() then
         require("luasnip").expand_or_jump()
       else
         fallback()
@@ -83,48 +83,29 @@ cmp.setup {
     ["<S-Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
-      elseif require("luasnip").jumpable(-1) then
+      elseif require("luasnip").locally_jumpable(-1) then
         require("luasnip").jump(-1)
       else
         fallback()
       end
     end, { "i", "s" }),
+  }),
+
+  formatting = {
+    fields = { "kind", "abbr", "menu" },
+    format = function(_, item)
+      item.kind = string.format(" %s ", kind_icons[item.kind] or "")
+      return item
+    end,
   },
+
   sources = {
-    { name = "nvim_lsp", priority = 1000 },
-    { name = "luasnip",  priority = 750 },
-    { name = "buffer",   priority = 500 },
-    { name = "nvim_lua", priority = 400 },
-    { name = "path",     priority = 250 },
-    { name = "spell",    priority = 100 },
+    { name = "nvim_lsp" },
+    { name = "luasnip" },
+    { name = "buffer" },
+    { name = "nvim_lua" },
+    { name = "path" },
   },
-  formatting = formatting_style,
-  window = {
-    completion = {
-      side_padding = 0,
-      winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None",
-      scrollbar = false,
-      border = border "CmpBorder",
-    },
-    documentation = {
-      border = border "CmpDocBorder",
-      winhighlight = "Normal:CmpDoc",
-    },
-  },
-  completion = {
-    completeopt = "menu,menuone,noselect",
-  },
-}
-
-vim.cmd [[
-  highlight! default link CmpSel PmenuSel
-  highlight! default link CmpPmenu Pmenu
-  highlight! default link CmpPmenuSel PmenuSel
-  highlight! default link CmpBorder Pmenu
-  highlight! default link CmpDoc Pmenu
-  highlight! default link CmpDocBorder Pmenu
-]]
-
-vim.o.pumheight = 10
+})
 
 return cmp

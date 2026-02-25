@@ -32,20 +32,22 @@ return {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
     dependencies = {
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-nvim-lsp",
-      "saadparwaiz1/cmp_luasnip",
-      "hrsh7th/cmp-nvim-lua",
-
-      -- Snippets
+      -- snippet plugin
       "rafamadriz/friendly-snippets",
       {
         "L3MON4D3/LuaSnip",
+        opts = { history = true, updateevents = "TextChanged,TextChangedI" },
         config = function()
+          require("luasnip").config.set_config({ history = true, updateevents = "TextChanged,TextChangedI" })
           require("luasnip.loaders.from_vscode").lazy_load()
         end,
       },
+      -- cmp sources
+      "saadparwaiz1/cmp_luasnip",
+      "hrsh7th/cmp-nvim-lua",
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
     },
     config = function()
       require("plugins.configs.cmp")

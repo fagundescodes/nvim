@@ -85,6 +85,11 @@ M.capabilities.textDocument.completion.completionItem = {
   },
 }
 
+local has_cmp_nvim_lsp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+if has_cmp_nvim_lsp then
+  M.capabilities = cmp_nvim_lsp.default_capabilities(M.capabilities)
+end
+
 M.on_attach = function(client, bufnr)
   M.setup_keymaps(bufnr)
   if client.supports_method("textDocument/semanticTokens") then
