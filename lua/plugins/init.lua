@@ -18,7 +18,6 @@ return {
   -- Syntax highlighting
   {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = { "OXY2DEV/markview.nvim" },
     branch = "main",
     lazy = false,
     build = ":TSUpdate",
