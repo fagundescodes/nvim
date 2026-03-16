@@ -5,14 +5,13 @@ return {
     "nvim-lua/plenary.nvim",
   },
 
+  -- lua/plugins/rose-pine.lua
   {
-    "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {},
+    "rose-pine/neovim",
+    name = "rose-pine",
     config = function()
-      vim.cmd("colorscheme tokyonight-night")
-    end,
+      vim.cmd("colorscheme rose-pine")
+    end
   },
 
   -- Syntax highlighting
