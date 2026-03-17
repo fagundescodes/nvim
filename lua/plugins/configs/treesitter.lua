@@ -1,19 +1,37 @@
 local ts = require("nvim-treesitter")
 
 local parsers = {
+  -- defaults
   "vim",
   "lua",
   "vimdoc",
+
+  -- web dev
   "html",
   "css",
   "javascript",
   "typescript",
   "tsx",
+
+  -- low level
   "c",
-  "markdown",
-  "markdown_inline",
+  "zig",
+  "rust",
+  "cpp",
+
+  -- others
+  "python",
+  "json",
+  "yaml",
+  "toml",
+  "jsonc",
+  "bash",
+  "go",
+  "java",
+  "regex",
+  "c_sharp",
+  "sql",
   "query",
-  "luadoc",
 }
 
 ts.setup({})
