@@ -24,7 +24,6 @@ local parsers = {
   "json",
   "yaml",
   "toml",
-  "jsonc",
   "bash",
   "go",
   "java",
