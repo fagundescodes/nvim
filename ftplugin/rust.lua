@@ -1,10 +1,11 @@
 local utils = require("lsp.utils")
+local lsp = require("lsp.helpers")
 
 vim.lsp.start({
   name = "rust_analyzer",
   cmd = { "rust-analyzer" },
   filetypes = { "rust" },
-  root_dir = vim.fs.dirname(vim.fs.find({ "Cargo.toml", "Cargo.lock", ".git" }, { upward = true })[1]),
+  root_dir = lsp.find_root({ "Cargo.toml", "Cargo.lock", ".git" }),
   settings = {
     ["rust-analyzer"] = {
       cargo = {

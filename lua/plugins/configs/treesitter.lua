@@ -28,7 +28,6 @@ local parsers = {
   "go",
   "java",
   "regex",
-  "c_sharp",
   "sql",
   "query",
 }
@@ -72,7 +71,6 @@ local ignore_filetypes = {
   checkhealth = true,
   help = true,
   lazy = true,
-  mason = true,
   qf = true,
 }
 

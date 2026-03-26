@@ -84,9 +84,10 @@ o.linebreak = true
 o.splitbelow = true
 o.splitright = true
 
--- Mason binaries to PATH
-local is_windows = vim.loop.os_uname().sysname == "Windows_NT"
-vim.env.PATH = vim.env.PATH .. (is_windows and ";" or ":") .. vim.fn.stdpath("data") .. "/mason/bin"
-
 -- Quickfix filter plugin
 vim.cmd.packadd("cfilter")
+
+vim.g.netrw_banner = 0
+vim.g.netrw_liststyle = 3
+vim.g.netrw_browse_split = 0
+vim.g.netrw_winsize = 25

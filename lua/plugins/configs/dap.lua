@@ -97,24 +97,23 @@ for _, language in ipairs({ "typescript", "javascript" }) do
   }
 end
 
-dap.adapters.coreclr = {
-  type = "executable",
-  command = "netcoredbg",
-  args = { "--interpreter=vscode" },
-}
-
-dap.configurations.cs = {
+dap.configurations.java = vim.list_extend(dap.configurations.java or {}, {
   {
-    type = "coreclr",
-    name = "launch - netcoredbg",
-    request = "launch",
-    program = function()
-      vim.fn.system("dotnet build")
-      local csproj = vim.fn.glob("*.csproj")
-      local project_name = csproj ~= "" and vim.fn.fnamemodify(csproj, ":t:r") or vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-      local dll = vim.fn.glob("bin/Debug/net*/" .. project_name .. ".dll")
-      return dll ~= "" and dll or vim.fn.getcwd() .. "/bin/Debug/net9.0/" .. project_name .. ".dll"
+    type = "java",
+    request = "attach",
+    name = "Attach Quarkus :5005",
+    hostName = "127.0.0.1",
+    port = 5005,
+    timeout = 30000,
+    projectName = function()
+      return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
     end,
-    cwd = "${workspaceFolder}",
+    sourcePaths = function()
+      local cwd = vim.fn.getcwd()
+      return {
+        cwd .. "/src/main/java",
+        cwd .. "/src/test/java",
+      }
+    end,
   },
-}
+})

@@ -1,11 +1,12 @@
 local utils = require("lsp.utils")
+local lsp = require("lsp.helpers")
+local format = require("format.helpers")
 
 local root_files = {
   "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt",
   "Pipfile", "poetry.lock", "pyrightconfig.json", ".git"
 }
-local paths = vim.fs.find(root_files, { stop = vim.env.HOME })
-local root_dir = paths[1] and vim.fs.dirname(paths[1]) or vim.fn.getcwd()
+local root_dir = lsp.find_root(root_files)
 
 if root_dir then
   vim.lsp.start({
@@ -33,24 +34,16 @@ if root_dir then
         },
       },
     },
-    on_attach = function(client, bufnr)
-      utils.on_attach(client, bufnr)
-
-      vim.keymap.set("n", "<leader>fm", function()
-        local file = vim.fn.expand("%")
-        local escaped_file = vim.fn.shellescape(file)
-        local cursor_pos  = vim.api.nvim_win_get_cursor(0)
-
-        vim.cmd("write")
-
-        vim.fn.system("isort " .. escaped_file)
-        vim.fn.system("black " .. escaped_file)
-
-        vim.cmd("checktime")
-        vim.api.nvim_win_set_cursor(0, cursor_pos)
-      end, { buffer = bufnr, desc = "Format Python file" })
-    end,
   })
+end
+
+if vim.fn.executable("isort") == 1 and vim.fn.executable("black") == 1 then
+  vim.keymap.set("n", "<leader>fm", function()
+    format.run_file_commands({
+      { "isort" },
+      { "black" },
+    })
+  end, { buffer = true, desc = "Format Python file" })
 end
 
 vim.opt_local.tabstop = 4

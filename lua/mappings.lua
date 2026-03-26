@@ -64,19 +64,11 @@ map("v", "<Down>", "v:count || mode(1)[0:1] == 'no' ? 'j' : 'gj'", { expr = true
 map("v", "<", "<gv", { desc = "Indent line" })
 map("v", ">", ">gv", { desc = "Indent line" })
 
--- tmux navigation
-if vim.fn.exists("$TMUX") == 1 then
-  map("n", "<C-h>", "<cmd> TmuxNavigateLeft<CR>")
-  map("n", "<C-l>", "<cmd> TmuxNavigateRight<CR>")
-  map("n", "<C-j>", "<cmd> TmuxNavigateDown<CR>")
-  map("n", "<C-k>", "<cmd> TmuxNavigateUp<CR>")
-else
-  -- window navigation
-  map("n", "<C-h>", "<C-w>h", { desc = "switch to left window" })
-  map("n", "<C-l>", "<C-w>l", { desc = "switch to right window" })
-  map("n", "<C-j>", "<C-w>j", { desc = "switch to bottom window" })
-  map("n", "<C-k>", "<C-w>k", { desc = "switch to top window" })
-end
+-- window navigation
+map("n", "<C-h>", "<C-w>h", { desc = "switch to left window" })
+map("n", "<C-l>", "<C-w>l", { desc = "switch to right window" })
+map("n", "<C-j>", "<C-w>j", { desc = "switch to bottom window" })
+map("n", "<C-k>", "<C-w>k", { desc = "switch to top window" })
 
 -- window resizing
 map("n", "<M-H>", "2<C-w><", { desc = "decrease window width" })
@@ -95,20 +87,28 @@ map("n", "<leader>n", "<cmd>set nu!<CR>", { desc = "toggle line numbers" })
 map("n", "<leader>rn", "<cmd>set rnu!<CR>", { desc = "toggle relative numbers" })
 
 -- nvim-tree
-map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "toggle file explorer" })
-
-map("n", "<leader>wK", "<cmd>WhichKey <CR>", { desc = "whichkey all keymaps" })
-map("n", "<leader>wk", function()
-  vim.cmd("WhichKey " .. vim.fn.input("WhichKey: "))
-end, { desc = "whichkey query lookup" })
+map("n", "<C-n>", "<cmd>Lexplore<CR>", { desc = "toggle file explorer" })
 
 -- DAP mappings
 map("n", "<F10>", "<cmd>lua require('dap').toggle_breakpoint()<CR>", { desc = "Toggle breakpoint" })
-map("n", "<F5>", "<cmd>lua require('dap').continue()<CR>", { desc = "Continue" })
+map("n", "<F5>", function()
+  require("dap").continue()
+end, { desc = "Continue" })
 map("n", "<F9>", "<cmd>lua require('dap').restart()<CR>", { desc = "Restart" })
 map("n", "<F7>", "<cmd>lua require('dap').step_out()<CR>", { desc = "Step out" })
 map("n", "<F6>", "<cmd>lua require('dap').step_into()<CR>", { desc = "Step into" })
 map("n", "<F8>", "<cmd>lua require('dap').step_over()<CR>", { desc = "Step over" })
+map("n", "<leader>dq", function()
+  local dap = require("dap")
+  local configs = dap.configurations.java or {}
+  for _, config in ipairs(configs) do
+    if config.name == "Attach Quarkus :5005" then
+      dap.run(config)
+      return
+    end
+  end
+  vim.notify("Java debug config 'Attach Quarkus :5005' not found", vim.log.levels.ERROR)
+end, { desc = "Attach Quarkus debug" })
 map("n", "<leader>dpr", function()
   local args = vim.fn.input("Arguments: ")
   vim.cmd("RustLsp debuggables " .. args)
@@ -118,20 +118,8 @@ end, { desc = "Select and run Rust debuggable" })
 map("n", "<Tab>", "<cmd>bnext<CR>")
 map("n", "<S-Tab>", "<cmd>bprev<CR>")
 map("n", "<leader>b", "<cmd> enew <CR>")
-map("n", "<leader>x", function()
-  if vim.bo.modified then
-    local choice = vim.fn.confirm("Buffer não salvo. Deseja salvar?", "&Sim\n&Não\n&Cancelar", 3)
-    if choice == 1 then
-      vim.cmd("write")
-    elseif choice == 3 then
-      return
-    end
-  end
+map("n", "<leader>x",  "<cmd> bdelete <CR>")
 
-  local current = vim.api.nvim_get_current_buf()
-  vim.cmd("bnext")
-  vim.cmd("bdelete " .. current)
-end, { noremap = true, silent = true })
 
 -- Plugin keymaps
 map("n", "<leader>fw", "<cmd>FzfLua live_grep --fixed-strings<CR>", { desc = "search live with fzf-lua" })

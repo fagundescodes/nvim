@@ -1,14 +1,20 @@
+local M = {}
+
 local terminal_state = {
   buf = nil,
   win = nil,
   is_open = false,
 }
 
-local function FloatingTerminal()
+local function open_terminal(cmd)
   if terminal_state.is_open and vim.api.nvim_win_is_valid(terminal_state.win) then
     vim.api.nvim_win_close(terminal_state.win, false)
     terminal_state.is_open = false
     return
+  end
+
+  if cmd then
+    terminal_state.buf = nil
   end
 
   if not terminal_state.buf or not vim.api.nvim_buf_is_valid(terminal_state.buf) then
@@ -47,7 +53,7 @@ local function FloatingTerminal()
   end
 
   if not has_terminal then
-    vim.fn.jobstart({ os.getenv("SHELL") or "/bin/sh" }, { term = true })
+    vim.fn.jobstart(cmd or { os.getenv("SHELL") or "/bin/sh" }, { term = true })
   end
 
   terminal_state.is_open = true
@@ -65,10 +71,20 @@ local function FloatingTerminal()
   })
 end
 
-vim.keymap.set("n", "<leader>t", FloatingTerminal, { noremap = true, silent = true, desc = "Toggle floating terminal" })
+function M.toggle()
+  open_terminal()
+end
+
+function M.run(cmd)
+  open_terminal(cmd)
+end
+
+vim.keymap.set("n", "<leader>t", M.toggle, { noremap = true, silent = true, desc = "Toggle floating terminal" })
 vim.keymap.set("t", "<Esc>", function()
   if terminal_state.is_open then
     vim.api.nvim_win_close(terminal_state.win, false)
     terminal_state.is_open = false
   end
 end, { noremap = true, silent = true, desc = "Close floating terminal from terminal mode" })
+
+return M

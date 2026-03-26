@@ -1,7 +1,7 @@
 local jdtls = require("jdtls")
 local home = os.getenv("HOME")
 
-local java_path = "/usr/lib/jvm/java-21-temurin/bin/java"
+local java_path = "/usr/lib/jvm/java-25-temurin/bin/java"
 local jdtls_path = "/usr/share/java/jdtls"
 local java_debug_jar = "/usr/share/java-debug/com.microsoft.java.debug.plugin.jar"
 local lombok_jar = home .. "/.local/share/lombok/lombok.jar"
@@ -55,13 +55,13 @@ local config = {
       configuration = {
         runtimes = {
           {
-            name = "JavaSE-21",
-            path = "/usr/lib/jvm/java-21-temurin/",
+            name = "JavaSE-25",
+            path = "/usr/lib/jvm/java-25-temurin/",
             default = true,
           },
           {
-            name = "JavaSE-25",
-            path = "/usr/lib/jvm/java-25-temurin/",
+            name = "JavaSE-21",
+            path = "/usr/lib/jvm/java-21-temurin/",
           },
         },
       },
@@ -123,9 +123,6 @@ local config = {
     ["language/status"] = function() end,
   },
   on_attach = function(client, bufnr)
-    local utils = require("lsp.utils")
-    utils.on_attach(client, bufnr)
-
     vim.keymap.set("n", "<leader>jo", jdtls.organize_imports, { buffer = bufnr, desc = "Organize imports (Java)" })
     vim.keymap.set("n", "<leader>jev", jdtls.extract_variable, { buffer = bufnr, desc = "Extract variable (Java)" })
     vim.keymap.set("n", "<leader>jec", jdtls.extract_constant, { buffer = bufnr, desc = "Extract constant (Java)" })
