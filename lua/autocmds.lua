@@ -1,5 +1,12 @@
 local function augroup(name)
-  return vim.api.nvim_create_augroup("lazyvim_" .. name, { clear = true })
+  return vim.api.nvim_create_augroup("nvim_" .. name, { clear = true })
+end
+
+local function setup_ts_lsp(event)
+  local lsp = require("lsp.helpers")
+  local language = event.match:find("^typescript") and "typescript" or "javascript"
+
+  vim.lsp.start(lsp.ts_server_config({ event.match }, lsp.ts_inlay_settings(language)))
 end
 
 -- Highlight on yank
@@ -26,10 +33,10 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   callback = function(event)
     local exclude = { "gitcommit" }
     local buf = event.buf
-    if vim.tbl_contains(exclude, vim.bo[buf].filetype) or vim.b[buf].lazyvim_last_loc then
+    if vim.tbl_contains(exclude, vim.bo[buf].filetype) or vim.b[buf].nvim_last_loc then
       return
     end
-    vim.b[buf].lazyvim_last_loc = true
+    vim.b[buf].nvim_last_loc = true
     local mark = vim.api.nvim_buf_get_mark(buf, '"')
     local lcount = vim.api.nvim_buf_line_count(buf)
     if mark[1] > 0 and mark[1] <= lcount then
@@ -42,20 +49,11 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup("close_with_q"),
   pattern = {
-    "PlenaryTestPopup",
     "help",
-    "lspinfo",
     "man",
-    "notify",
     "qf",
     "query",
-    "spectre_panel",
-    "startuptime",
-    "tsplayground",
-    "neotest-output",
     "checkhealth",
-    "neotest-summary",
-    "neotest-output-panel",
   },
   callback = function(event)
     vim.bo[event.buf].buflisted = false
@@ -119,4 +117,10 @@ vim.api.nvim_create_autocmd("FileType", {
       end)
     end, vim.tbl_extend("force", opts, { desc = "Preview" }))
   end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("ts_lsp_setup"),
+  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+  callback = setup_ts_lsp,
 })

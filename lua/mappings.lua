@@ -1,3 +1,4 @@
+local format = require("format.helpers")
 local map = vim.keymap.set
 
 -- vim.g.mapleader = ";"
@@ -16,10 +17,7 @@ end, { desc = "Show File Path" })
 
 --format
 map({ "n", "v" }, "<leader>fm", function()
-  vim.lsp.buf.format({
-    async = false,
-    timeout_ms = 1000,
-  })
+  format.format(0)
 end)
 
 -- Alias for quit commands
@@ -86,7 +84,7 @@ map("n", "#", "#zzzv", { desc = "Search word under cursor backwards centered" })
 map("n", "<leader>n", "<cmd>set nu!<CR>", { desc = "toggle line numbers" })
 map("n", "<leader>rn", "<cmd>set rnu!<CR>", { desc = "toggle relative numbers" })
 
--- nvim-tree
+-- file explorer
 map("n", "<C-n>", "<cmd>Lexplore<CR>", { desc = "toggle file explorer" })
 
 -- DAP mappings
@@ -98,17 +96,6 @@ map("n", "<F9>", "<cmd>lua require('dap').restart()<CR>", { desc = "Restart" })
 map("n", "<F7>", "<cmd>lua require('dap').step_out()<CR>", { desc = "Step out" })
 map("n", "<F6>", "<cmd>lua require('dap').step_into()<CR>", { desc = "Step into" })
 map("n", "<F8>", "<cmd>lua require('dap').step_over()<CR>", { desc = "Step over" })
-map("n", "<leader>dq", function()
-  local dap = require("dap")
-  local configs = dap.configurations.java or {}
-  for _, config in ipairs(configs) do
-    if config.name == "Attach Quarkus :5005" then
-      dap.run(config)
-      return
-    end
-  end
-  vim.notify("Java debug config 'Attach Quarkus :5005' not found", vim.log.levels.ERROR)
-end, { desc = "Attach Quarkus debug" })
 map("n", "<leader>dpr", function()
   local args = vim.fn.input("Arguments: ")
   vim.cmd("RustLsp debuggables " .. args)

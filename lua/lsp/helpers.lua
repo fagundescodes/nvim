@@ -1,4 +1,13 @@
 local M = {}
+local ts_inlay_hints = {
+  includeInlayParameterNameHints = "all",
+  includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+  includeInlayFunctionParameterTypeHints = true,
+  includeInlayVariableTypeHints = true,
+  includeInlayPropertyDeclarationTypeHints = true,
+  includeInlayFunctionLikeReturnTypeHints = true,
+  includeInlayEnumMemberValueHints = true,
+}
 
 local function current_path(bufnr)
   local name = vim.api.nvim_buf_get_name(bufnr or 0)
@@ -23,25 +32,18 @@ function M.find_root(markers, bufnr)
   return vim.uv.cwd()
 end
 
-function M.find_root_by_glob(patterns, bufnr)
-  local path = current_path(bufnr)
+function M.project_name(path)
+  return vim.fs.basename(path or current_path(0))
+end
 
-  while path and path ~= "" do
-    for _, pattern in ipairs(patterns) do
-      local matches = vim.fn.globpath(path, pattern, false, true)
-      if #matches > 0 then
-        return path
-      end
-    end
-
-    local parent = vim.fs.dirname(path)
-    if parent == path or parent == vim.env.HOME then
-      break
-    end
-    path = parent
-  end
-
-  return M.find_root({ ".git" }, bufnr)
+function M.ts_inlay_settings(language)
+  return {
+    settings = {
+      [language] = {
+        inlayHints = vim.deepcopy(ts_inlay_hints),
+      },
+    },
+  }
 end
 
 function M.ts_server_config(filetypes, extra)

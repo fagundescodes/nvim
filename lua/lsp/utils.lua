@@ -1,6 +1,21 @@
 local M = {}
 local map = vim.keymap.set
 
+local function semantic_tokens_disabled_for(client, bufnr)
+  local disabled_servers = vim.g.lsp_semantic_tokens_disabled_servers or {
+    jdtls = true,
+  }
+
+  if disabled_servers[client.name] then
+    return true
+  end
+
+  local disabled_filetypes = vim.g.lsp_semantic_tokens_disabled_filetypes or {}
+  local filetype = vim.bo[bufnr].filetype
+
+  return disabled_filetypes[filetype] == true
+end
+
 M.setup_keymaps = function(bufnr)
   local function opts(desc)
     return { buffer = bufnr, desc = "LSP " .. desc }
@@ -92,7 +107,7 @@ end
 
 M.on_attach = function(client, bufnr)
   M.setup_keymaps(bufnr)
-  if client.supports_method("textDocument/semanticTokens") then
+  if client.supports_method("textDocument/semanticTokens") and semantic_tokens_disabled_for(client, bufnr) then
     client.server_capabilities.semanticTokensProvider = nil
   end
   if client.supports_method("textDocument/inlayHint") then
