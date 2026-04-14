@@ -85,8 +85,7 @@ map("n", "<leader>n", "<cmd>set nu!<CR>", { desc = "toggle line numbers" })
 map("n", "<leader>rn", "<cmd>set rnu!<CR>", { desc = "toggle relative numbers" })
 
 -- file explorer
-map("n", "<C-n>", "<cmd>Lexplore<CR>", { desc = "toggle file explorer" })
-
+map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "toggle file explorer" })
 -- DAP mappings
 map("n", "<F10>", "<cmd>lua require('dap').toggle_breakpoint()<CR>", { desc = "Toggle breakpoint" })
 map("n", "<F5>", function()

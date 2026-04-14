@@ -107,10 +107,10 @@ end
 
 M.on_attach = function(client, bufnr)
   M.setup_keymaps(bufnr)
-  if client.supports_method("textDocument/semanticTokens") and semantic_tokens_disabled_for(client, bufnr) then
+  if client:supports_method("textDocument/semanticTokens") and semantic_tokens_disabled_for(client, bufnr) then
     client.server_capabilities.semanticTokensProvider = nil
   end
-  if client.supports_method("textDocument/inlayHint") then
+  if client:supports_method("textDocument/inlayHint") then
     vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
   end
 end

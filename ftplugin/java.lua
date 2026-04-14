@@ -1,40 +1,20 @@
 local jdtls = require("jdtls")
-local lsp = require("lsp.helpers")
 local home = os.getenv("HOME")
-local java_home = os.getenv("JAVA25_HOME") or os.getenv("JAVA_HOME") or "/usr/lib/jvm/java-25-temurin"
-local java_path = java_home .. "/bin/java"
+
+local java_path = "/usr/lib/jvm/java-21-temurin/bin/java"
 local jdtls_path = "/usr/share/java/jdtls"
 local java_debug_jar = "/usr/share/java-debug/com.microsoft.java.debug.plugin.jar"
 local lombok_jar = home .. "/.local/share/lombok/lombok.jar"
 local config_dir = home .. "/.local/share/jdtls/config_linux"
-local root_dir = require("jdtls.setup").find_root({
-  "pom.xml",
-  "build.gradle",
-  "build.gradle.kts",
-  "settings.gradle",
-  "settings.gradle.kts",
-  ".git",
-  "mvnw",
-  "gradlew",
-}) or lsp.find_root({
-  "pom.xml",
-  "build.gradle",
-  "build.gradle.kts",
-  "settings.gradle",
-  "settings.gradle.kts",
-  ".git",
-  "mvnw",
-  "gradlew",
-})
-local workspace_dir = home .. "/.local/share/jdtls-workspace/" .. lsp.project_name(root_dir)
+local root_dir = require("jdtls.setup").find_root({ "pom.xml", "build.gradle", ".git" }) or vim.fn.getcwd()
+local workspace_dir = home .. "/.local/share/jdtls-workspace/" .. vim.fn.fnamemodify(root_dir, ":t")
 
 if vim.fn.filereadable(java_path) == 0 then
   error("Java executable not found at " .. java_path)
 end
 
-local launcher_jars = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar", false, true)
-local launcher_jar = launcher_jars[1]
-if not launcher_jar or launcher_jar == "" then
+local launcher_jar = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
+if launcher_jar == "" then
   error("JDTLS launcher JAR not found in " .. jdtls_path .. "/plugins/")
 end
 
@@ -83,13 +63,13 @@ local config = {
       configuration = {
         runtimes = {
           {
-            name = "JavaSE-25",
-            path = "/usr/lib/jvm/java-25-temurin/",
+            name = "JavaSE-21",
+            path = "/usr/lib/jvm/java-21-temurin/",
             default = true,
           },
           {
-            name = "JavaSE-21",
-            path = "/usr/lib/jvm/java-21-temurin/",
+            name = "JavaSE-25",
+            path = "/usr/lib/jvm/java-25-temurin/",
           },
         },
       },
@@ -150,7 +130,10 @@ local config = {
   handlers = {
     ["language/status"] = function() end,
   },
-  on_attach = function(_, bufnr)
+  on_attach = function(client, bufnr)
+    local utils = require("lsp.utils")
+    utils.on_attach(client, bufnr)
+
     vim.keymap.set("n", "<leader>jo", jdtls.organize_imports, { buffer = bufnr, desc = "Organize imports (Java)" })
     vim.keymap.set("n", "<leader>jev", jdtls.extract_variable, { buffer = bufnr, desc = "Extract variable (Java)" })
     vim.keymap.set("n", "<leader>jec", jdtls.extract_constant, { buffer = bufnr, desc = "Extract constant (Java)" })

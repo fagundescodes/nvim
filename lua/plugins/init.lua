@@ -8,6 +8,20 @@ return {
     end
   },
 
+  {
+    "nvim-tree/nvim-tree.lua",
+    cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = function()
+      return require("plugins.configs.nvim-tree")
+    end,
+    config = function(_, opts)
+      require("nvim-tree").setup(opts)
+    end,
+  },
+
   -- Syntax highlighting
   {
     "nvim-treesitter/nvim-treesitter",
