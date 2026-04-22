@@ -18,7 +18,7 @@ end
 
 M.setup_keymaps = function(bufnr)
   local function opts(desc)
-    return { buffer = bufnr, desc = "LSP " .. desc }
+    return { buf = bufnr, desc = "LSP " .. desc }
   end
   map("n", "gD", vim.lsp.buf.declaration, opts("Go to declaration"))
   map("n", "gd", vim.lsp.buf.definition, opts("Go to definition"))
@@ -36,26 +36,10 @@ M.setup_keymaps = function(bufnr)
   map("n", "<leader>D", vim.lsp.buf.type_definition, opts("Go to type definition"))
   map("n", "<leader>ra", vim.lsp.buf.rename, opts("Rename"))
   map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts("Code action"))
-  map("n", "gr", vim.lsp.buf.references, opts("Show references"))
 end
 
 M.setup_diagnostics = function()
   local icons = { Error = " ", Warn = " ", Info = " ", Hint = " " }
-
-  local signs = {
-    { name = "DiagnosticSignError", text = icons.Error },
-    { name = "DiagnosticSignWarn",  text = icons.Warn },
-    { name = "DiagnosticSignInfo",  text = icons.Info },
-    { name = "DiagnosticSignHint",  text = icons.Hint },
-  }
-
-  for _, sign in ipairs(signs) do
-    vim.fn.sign_define(sign.name, {
-      texthl = sign.name,
-      text = sign.text,
-      numhl = sign.name,
-    })
-  end
 
   vim.diagnostic.config({
     severity_sort = true,
@@ -63,12 +47,17 @@ M.setup_diagnostics = function()
     virtual_lines = { current_line = true },
     underline = true,
     signs = {
-      active = signs,
       text = {
         [vim.diagnostic.severity.ERROR] = icons.Error,
         [vim.diagnostic.severity.WARN] = icons.Warn,
         [vim.diagnostic.severity.INFO] = icons.Info,
         [vim.diagnostic.severity.HINT] = icons.Hint,
+      },
+      numhl = {
+        [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+        [vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+        [vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+        [vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
       },
     },
     float = {
@@ -105,6 +94,24 @@ if has_cmp_nvim_lsp then
   M.capabilities = cmp_nvim_lsp.default_capabilities(M.capabilities)
 end
 
+M.setup_default_config = function()
+  vim.lsp.config("*", {
+    capabilities = M.capabilities,
+  })
+end
+
+M.enable_configs = function()
+  vim.lsp.enable({
+    "basedpyright",
+    "clangd",
+    "gopls",
+    "lua_ls",
+    "rust_analyzer",
+    "ts_ls",
+    "zls",
+  })
+end
+
 M.on_attach = function(client, bufnr)
   M.setup_keymaps(bufnr)
   if client:supports_method("textDocument/semanticTokens") and semantic_tokens_disabled_for(client, bufnr) then
@@ -115,13 +122,14 @@ M.on_attach = function(client, bufnr)
   end
 end
 
--- Setup diagnostics globally
 M.setup_diagnostics()
 
--- Setup fancy diagnostics
+M.setup_default_config()
+
+M.enable_configs()
+
 require("scripts.diagnostics").setup()
 
--- Global LspAttach autocmd
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("UserLspConfig", {}),
   callback = function(args)

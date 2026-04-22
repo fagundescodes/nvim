@@ -95,10 +95,6 @@ map("n", "<F9>", "<cmd>lua require('dap').restart()<CR>", { desc = "Restart" })
 map("n", "<F7>", "<cmd>lua require('dap').step_out()<CR>", { desc = "Step out" })
 map("n", "<F6>", "<cmd>lua require('dap').step_into()<CR>", { desc = "Step into" })
 map("n", "<F8>", "<cmd>lua require('dap').step_over()<CR>", { desc = "Step over" })
-map("n", "<leader>dpr", function()
-  local args = vim.fn.input("Arguments: ")
-  vim.cmd("RustLsp debuggables " .. args)
-end, { desc = "Select and run Rust debuggable" })
 
 -- bufferline, cycle buffers
 map("n", "<Tab>", "<cmd>bnext<CR>")

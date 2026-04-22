@@ -1,78 +1,11 @@
 local jdtls = require("jdtls")
-local home = os.getenv("HOME")
-
-local java_path = "/usr/lib/jvm/java-21-temurin/bin/java"
-local jdtls_path = "/usr/share/java/jdtls"
-local java_debug_jar = "/usr/share/java-debug/com.microsoft.java.debug.plugin.jar"
-local lombok_jar = home .. "/.local/share/lombok/lombok.jar"
-local config_dir = home .. "/.local/share/jdtls/config_linux"
-local root_dir = require("jdtls.setup").find_root({ "pom.xml", "build.gradle", ".git" }) or vim.fn.getcwd()
-local workspace_dir = home .. "/.local/share/jdtls-workspace/" .. vim.fn.fnamemodify(root_dir, ":t")
-
-if vim.fn.filereadable(java_path) == 0 then
-  error("Java executable not found at " .. java_path)
-end
-
-local launcher_jar = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
-if launcher_jar == "" then
-  error("JDTLS launcher JAR not found in " .. jdtls_path .. "/plugins/")
-end
-
-if vim.fn.filereadable(lombok_jar) == 0 then
-  error("Lombok JAR not found at " .. lombok_jar)
-end
-
-if vim.fn.filereadable(java_debug_jar) == 0 then
-  error("Java Debug JAR not found at " .. java_debug_jar)
-end
-
-if vim.fn.filereadable(config_dir .. "/config.ini") == 0 then
-  error("JDTLS config not found at " .. config_dir)
-end
-
-vim.fn.mkdir(workspace_dir, "p")
 
 local config = {
-  cmd = {
-    java_path,
-    "-Declipse.application=org.eclipse.jdt.ls.core.id1",
-    "-Dosgi.bundles.defaultStartLevel=4",
-    "-Dlog.protocol=true",
-    "-Dlog.level=ALL",
-    "-Dfile.encoding=UTF-8",
-    "-XX:+UseParallelGC",
-    "-XX:GCTimeRatio=4",
-    "-XX:AdaptiveSizePolicyWeight=90",
-    "-javaagent:" .. lombok_jar,
-    "--add-modules=ALL-SYSTEM",
-    "--add-opens",
-    "java.base/java.util=ALL-UNNAMED",
-    "--add-opens",
-    "java.base/java.lang=ALL-UNNAMED",
-    "-jar",
-    launcher_jar,
-    "-configuration",
-    config_dir,
-    "-data",
-    workspace_dir,
-  },
-  filetypes = { "java" },
-  root_dir = root_dir,
+  name = "jdtls",
+  cmd = { "jdtls" },
+  root_dir = vim.fs.root(0, { "gradlew", ".git", "mvnw" }),
   settings = {
     java = {
-      configuration = {
-        runtimes = {
-          {
-            name = "JavaSE-21",
-            path = "/usr/lib/jvm/java-21-temurin/",
-            default = true,
-          },
-          {
-            name = "JavaSE-25",
-            path = "/usr/lib/jvm/java-25-temurin/",
-          },
-        },
-      },
       format = {
         enabled = true,
       },
@@ -124,25 +57,18 @@ local config = {
     },
   },
   init_options = {
-    bundles = { java_debug_jar },
-    workspaceFolders = nil,
+    bundles = { "/usr/share/java-debug/com.microsoft.java.debug.plugin.jar" },
   },
-  handlers = {
-    ["language/status"] = function() end,
-  },
-  on_attach = function(client, bufnr)
-    local utils = require("lsp.utils")
-    utils.on_attach(client, bufnr)
-
-    vim.keymap.set("n", "<leader>jo", jdtls.organize_imports, { buffer = bufnr, desc = "Organize imports (Java)" })
-    vim.keymap.set("n", "<leader>jev", jdtls.extract_variable, { buffer = bufnr, desc = "Extract variable (Java)" })
-    vim.keymap.set("n", "<leader>jec", jdtls.extract_constant, { buffer = bufnr, desc = "Extract constant (Java)" })
+  on_attach = function(_, bufnr)
+    vim.keymap.set("n", "<leader>jo", jdtls.organize_imports, { buf = bufnr, desc = "Organize imports (Java)" })
+    vim.keymap.set("n", "<leader>jev", jdtls.extract_variable, { buf = bufnr, desc = "Extract variable (Java)" })
+    vim.keymap.set("n", "<leader>jec", jdtls.extract_constant, { buf = bufnr, desc = "Extract constant (Java)" })
     vim.keymap.set("v", "<leader>jem", function()
       jdtls.extract_method(true)
-    end, { buffer = bufnr, desc = "Extract method (Java)" })
-    vim.keymap.set("n", "<leader>jt", jdtls.test_nearest_method, { buffer = bufnr, desc = "Test nearest method (Java)" })
-    vim.keymap.set("n", "<leader>jT", jdtls.test_class, { buffer = bufnr, desc = "Test class (Java)" })
+    end, { buf = bufnr, desc = "Extract method (Java)" })
+    vim.keymap.set("n", "<leader>jt", jdtls.test_nearest_method, { buf = bufnr, desc = "Test nearest method (Java)" })
+    vim.keymap.set("n", "<leader>jT", jdtls.test_class, { buf = bufnr, desc = "Test class (Java)" })
   end,
 }
 
-jdtls.start_or_attach(config)
+jdtls.start_or_attach(config, { dap = { hotcodereplace = "auto" } })

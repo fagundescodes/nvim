@@ -2,13 +2,6 @@ local function augroup(name)
   return vim.api.nvim_create_augroup("nvim_" .. name, { clear = true })
 end
 
-local function setup_ts_lsp(event)
-  local lsp = require("lsp.helpers")
-  local language = event.match:find("^typescript") and "typescript" or "javascript"
-
-  vim.lsp.start(lsp.ts_server_config({ event.match }, lsp.ts_inlay_settings(language)))
-end
-
 -- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup("highlight_yank"),
@@ -57,7 +50,7 @@ vim.api.nvim_create_autocmd("FileType", {
   },
   callback = function(event)
     vim.bo[event.buf].buflisted = false
-    vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true })
+    vim.keymap.set("n", "q", "<cmd>close<cr>", { buf = event.buf, silent = true })
   end,
 })
 
@@ -88,7 +81,7 @@ vim.api.nvim_create_autocmd("FileType", {
   group = augroup("quickfix_keymaps"),
   pattern = "qf",
   callback = function(event)
-    local opts = { buffer = event.buf, noremap = true }
+    local opts = { buf = event.buf, noremap = true }
 
     -- Close qf/loclist upon selecting entry
     vim.keymap.set("n", "<cr>", function()
@@ -117,10 +110,4 @@ vim.api.nvim_create_autocmd("FileType", {
       end)
     end, vim.tbl_extend("force", opts, { desc = "Preview" }))
   end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-  group = augroup("ts_lsp_setup"),
-  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-  callback = setup_ts_lsp,
 })
